@@ -1,16 +1,16 @@
- import * as React from 'react';
+import * as React from 'react';
 import Box from '@mui/material/Box';
-import Popper, { PopperPlacementType } from '@mui/material/Popper';
+import Popper from '@mui/material/Popper';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
+
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
-import { Tooltip, IconButton, Avatar, Popover } from '@mui/material';
-import { auto } from '@popperjs/core';
-import { List } from '@mui/icons-material';
-
-
+import { Avatar, ButtonBase, Stack, ListItemButton, ListItemText, Divider, ClickAwayListener } from '@mui/material';
+// material-ui
+import { useRef } from 'react';
+import LogoutIcon from '@mui/icons-material/Logout';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 interface ProfileProps {
   userName?: string;
 }
@@ -46,41 +46,92 @@ function stringToColor(string: string) {
 }
 
 const Profile: React.FC<ProfileProps> = ({ userName = "" }) => {
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-    setOpen((previousOpen) => !previousOpen);
+  const handleClickAway = () => {
+    setOpen(false);
   };
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = useRef(null);
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+  const iconBackColorOpen = 'grey.300';
 
-
-  const canBeOpen = open && Boolean(anchorEl);
-  const id = canBeOpen ? 'transition-popper' : undefined;
-  return (  
+  return (
     <Box>
-      <Button aria-describedby={id} variant="text" onClick={handleClick}>
-        <IconButton sx={{ p: 0 }}>
-            <Avatar {...stringAvatar(userName)} ></Avatar>
-        </IconButton> 
-      </Button>
+      <ButtonBase
+        sx={{
+          p: 0.25,
+          bgcolor: open ? iconBackColorOpen : 'transparent',
+          borderRadius: 1,
+          '&:hover': { bgcolor: 'secondary.lighter' }
+        }}
+        aria-label="open profile"
+        ref={anchorRef}
+        aria-controls={open ? 'profile-grow' : undefined}
+        aria-haspopup="true"
+        onClick={handleToggle}
+      >
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
+          <Avatar {...stringAvatar(userName)} ></Avatar>
+        </Stack>
+      </ButtonBase>
       <Box >
-      <Popper id={id} open={open} anchorEl={anchorEl} transition>
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={250}>
-            <Box sx={{ border: 1, p: 1, bgcolor: 'info' }}>
-          <Paper >
-              <Avatar {...stringAvatar(userName)} ></Avatar>
-          </Paper>
-              <Box>
-                <List></List>
-              </Box>
-            </Box>
-          </Fade>
-        )}
-      </Popper>
+        <Popper
+          placement="bottom-end"
+          open={open}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+          popperOptions={{
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 9]
+                }
+              }
+            ]
+          }}
+        >
+          {({ TransitionProps }) => (
+            <Paper
+              sx={{
+                width: 240,
+                minWidth: 240,
+                maxWidth: 290,
+                backgroundColor: '#e1dfdd'
+              }}
+            >
+              <ClickAwayListener onClickAway={handleClickAway}>
+                <Fade {...TransitionProps} >
+                  <Box sx={{ p: 1, bgcolor: 'primary' }}>
+                    <Typography style={{ textAlign: "center", backgroundColor: '#e1dfdd' }} >Profile</Typography>
+                    <Divider />
+                    <Box>
+                      <ListItemButton component="a" href="#simple-list">
+                        <EditIcon sx={{ m: 1 }} />
+                        <ListItemText primary="Edit Profile" />
+                      </ListItemButton>
+                      <ListItemButton component="a" href="#simple-list">
+                        <VisibilityIcon sx={{ m: 1 }} />
+                        <ListItemText primary="View Profile" />
+                      </ListItemButton>
+                      <ListItemButton component="a" href="#simple-list">
+                        <LogoutIcon sx={{ m: 1 }} />
+                        <ListItemText primary="Logout" />
+                      </ListItemButton>
+                    </Box>
+                  </Box>
+                </Fade>
+              </ClickAwayListener>
+            </Paper>
+          )}
+        </Popper>
+      </Box>
     </Box>
-    </Box>
+
   )
 }
 

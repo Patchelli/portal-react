@@ -6,7 +6,6 @@ import NavBar from '../components/header/NavBar';
 import MenuDrawer from '../components/header/MenuDrawer';
 import { listItems } from './testListItems';
 import StickyFooter from '../components/footer/StickyFooter';
-import { Profile } from '../components';
 
 const theme = createTheme({
   palette: {
@@ -45,7 +44,7 @@ function DashboardContent() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <NavBar toggleDrawer={toggleDrawer} userName={"Veronica Taborda"} open={open} menuName={"TESTE"}/>
+        <NavBar toggleDrawer={toggleDrawer} userName={"Adalbert Noberto"} open={open} menuName={"TESTE"} />
         <MenuDrawer toggleDrawer={toggleDrawer} open={open} menuList={listItems} />
         <Box
           component="main"
